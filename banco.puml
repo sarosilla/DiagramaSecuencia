@@ -1,0 +1,50 @@
+@startuml
+actor Cliente
+activate Cliente
+boundary InterfazPago
+control ControladorPedido
+entity EntidadPedido
+control ControladorPago
+entity EntidadPago
+boundary InterfazBanco
+actor SistemaGestiónPagosBanco
+activate SistemaGestiónPagosBanco
+activate InterfazPago
+
+Cliente -> InterfazPago: 1:realizarPago
+loop 
+InterfazPago -> ControladorPedido: 1.1:listarPedidos
+ControladorPedido -> EntidadPedido: 2:RecuperarPedidos
+activate ControladorPedido
+EntidadPedido --> ControladorPedido: 3:Pedidos
+ControladorPedido -> InterfazPago: 4:MostrarPedidos
+end
+Cliente -> InterfazPago: 5:SeleccionarPedido
+InterfazPago -> ControladorPedido: 5.1:RecuperarPedido
+ControladorPedido -> EntidadPedido: 6:RecuperarDatosPedido
+activate EntidadPedido
+EntidadPedido --> ControladorPedido: 7:DatosPedido
+
+ControladorPedido -> InterfazPago: 8:MostrarDatosPedido
+Cliente -> InterfazPago: 9:ConfirmarPedido
+InterfazPago -> ControladorPedido: 9.1:SolicitarPago
+ControladorPedido -> ControladorPago: 9.1.1:PagoPedido
+activate ControladorPago
+ControladorPedido -> ControladorPago: 9.1.1.1:SolicitarFormaPago
+Cliente -> InterfazPago: 10:SeleccionarFormaPago
+InterfazPago -> ControladorPago: 10.1:MétodoPagoActual Tarjeta
+ControladorPago -> ControladorPago: 10.2: CambiarMetodoPago Efectivo
+ControladorPago -> InterfazPago: 10.3:MetodoPagoSeleccionado
+Cliente -> InterfazPago: 11.IntroducirDatos
+InterfazPago -> ControladorPago: 11.1:ConfirmaDatos
+ControladorPago -> InterfazBanco: 11.1.1:ConfirmaDatosBancarios
+activate InterfazBanco
+InterfazBanco -> SistemaGestiónPagosBanco: 11.1.1.1:ConfirmarDatos
+SistemaGestiónPagosBanco ->InterfazBanco: 11.1.1.2:DatosCorrectos
+InterfazBanco -> ControladorPago: 11.1.1.3:PagoPedido
+ControladorPago -> InterfazBanco: 11.1.1.3.1:RealizarPago
+InterfazBanco -> SistemaGestiónPagosBanco: 11.1.3.1.1:RealizarPago
+ControladorPago -> EntidadPago: 11.1.1.3.2:RegistrarPago
+activate EntidadPago
+EntidadPago -> InterfazPago: 11.1.1.3.2.1:ConfirmarPago
+@enduml
